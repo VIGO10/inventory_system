@@ -15,13 +15,19 @@ class VendorController extends Controller
     /**
      * Show the vendor management page.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $vendors = Vendor::query()
-            ->orderBy('created_at', 'asc')
-            ->paginate(15);
+        $search = trim($request->input('search', ''));
 
-        return view('admin.vendor.index', compact('vendors'));
+        $vendors = Vendor::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->search($search);  // ← uses your scopeSearch()
+            })
+            ->orderBy('created_at', 'asc')
+            ->paginate(15)
+            ->appends($request->query()); // keeps ?search=... in pagination links
+
+        return view('admin.vendor.index', compact('vendors', 'search'));
     }
 
     /**
@@ -78,6 +84,42 @@ class VendorController extends Controller
     public function editVendor(Vendor $vendor)
     {
         return view('admin.vendor.edit', compact('vendor'));
+    }
+
+    public function _editVendor(Request $request, Vendor $vendor)
+    {
+        $validated = $request->validate([
+            'prefix'       => 'nullable|string|max:20',
+            'name'         => 'required|string|max:150|unique:vendors,name,' . $vendor->id,
+            'phone_number' => 'nullable|string|max:30',
+            'address'      => 'nullable|string|max:500',
+            'vendor_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // Update slug if name changed
+        if ($vendor->name !== $validated['name']) {
+            $baseSlug = Str::slug($validated['name']);
+            $slug = $baseSlug;
+            $counter = 1;
+            while (Vendor::where('slug', $slug)->where('id', '!=', $vendor->id)->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+            $validated['slug'] = $slug;
+        }
+
+        // Handle image replacement
+        if ($request->hasFile('vendor_image') && $request->file('vendor_image')->isValid()) {
+            // Delete old image if exists
+            if ($vendor->vendor_image) {
+                Storage::disk('public')->delete($vendor->vendor_image);
+            }
+            $validated['vendor_image'] = $request->file('vendor_image')->store('vendors', 'public');
+        }
+
+        $vendor->update($validated);
+
+        return redirect()->route('admin.vendor.index')
+            ->with('success', 'Vendor updated successfully.');
     }
 
     /**

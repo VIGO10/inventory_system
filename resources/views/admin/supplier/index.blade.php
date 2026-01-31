@@ -25,7 +25,7 @@
                             <a href="{{ route('admin.dashboard') }}">Home</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page" style="color: #6366f1">
-                            Vendor Management
+                            Supplier Management
                         </li>
                     </ol>
                 </nav>
@@ -35,20 +35,20 @@
                     color: #111827;
                     margin: 0;
                 ">
-                    Vendor Management
+                    Supplier Management
                 </h1>
                 <p style="
                     margin-top: 0.5rem;
                     color: #6b7280;
                     font-size: 1rem;
                 ">
-                    Manage all registered vendors and their information
+                    Manage all registered suppliers and their information
                 </p>
             </div>
 
             <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; width: 100%;">
-                <!-- Add New Vendor Button -->
-                <a href="{{ route('admin.vendor.create') }}"
+                <!-- Add New Supplier Button -->
+                <a href="{{ route('admin.supplier.create') }}"
                    style="
                        background: #6366f1;
                        color: white;
@@ -61,11 +61,11 @@
                    "
                    onmouseover="this.style.background='#4f46e5'; this.style.transform='translateY(-1px)';"
                    onmouseout="this.style.background='#6366f1'; this.style.transform='translateY(0)';">
-                    + Add New Vendor
+                    + Add New Supplier
                 </a>
 
                 <!-- Search Form -->
-                <form action="{{ route('admin.vendor.index') }}" method="GET" style="flex: 1; min-width: 300px;">
+                <form action="{{ route('admin.supplier.index') }}" method="GET" style="flex: 1; min-width: 300px;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <input type="text" name="search" value="{{ $search ?? '' }}"
                                placeholder="Search by name or prefix..."
@@ -95,7 +95,7 @@
                         </button>
 
                         @if($search)
-                            <a href="{{ route('admin.vendor.index') }}"
+                            <a href="{{ route('admin.supplier.index') }}"
                                style="
                                    color: #ef4444;
                                    font-weight: 500;
@@ -131,22 +131,22 @@
                                 color: #6b7280;
                                 text-transform: uppercase;
                                 letter-spacing: 0.05em;
-                            ">Vendor</th>
+                            ">Supplier</th>
                             <th style="padding: 1rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Phone</th>
                             <th style="padding: 1rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Address</th>
                             <th style="padding: 1rem 1.5rem; text-align: right; font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($vendors as $vendor)
+                        @forelse ($suppliers as $supplier)
                             <tr style="transition: background-color 0.15s;"
                                 onmouseover="this.style.backgroundColor='#f8fafc'"
                                 onmouseout="this.style.backgroundColor='white'">
                                 <td style="padding: 1rem 1.5rem; white-space: nowrap;">
                                     <div style="display: flex; align-items: center; gap: 1rem;">
-                                        @if($vendor->vendor_image)
-                                            <img src="{{ asset('storage/' . $vendor->vendor_image) }}"
-                                                 alt="{{ $vendor->name }}"
+                                        @if($supplier->supplier_image)
+                                            <img src="{{ asset('storage/' . $supplier->supplier_image) }}"
+                                                 alt="{{ $supplier->name }}"
                                                  style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb;">
                                         @else
                                             <div style="
@@ -160,24 +160,22 @@
                                                 font-weight: bold;
                                                 color: #6b7280;
                                             ">
-                                                {{ strtoupper(substr($vendor->name ?? '', 0, 1)) }}
+                                                {{ strtoupper(substr($supplier->name ?? '', 0, 1)) }}
                                             </div>
                                         @endif
                                         <div>
-                                            <div style="font-weight: 600; color: #111827;">
-                                                {{ $vendor->prefix ? $vendor->prefix . ' ' : '' }}{{ $vendor->name }}
-                                            </div>
+                                            <a style="font-weight: 600; color: #111827;" href="{{ route('admin.supplier.catalog.index', $supplier->slug) }}">{{ $supplier->prefix ? $supplier->prefix . ' ' : '' }}{{ $supplier->name }}</a>
                                         </div>
                                     </div>
                                 </td>
                                 <td style="padding: 1rem 1.5rem; color: #4b5563; white-space: nowrap;">
-                                    {{ $vendor->phone_number ?? '—' }}
+                                    {{ $supplier->phone_number ?? '—' }}
                                 </td>
                                 <td style="padding: 1rem 1.5rem; color: #4b5563; max-width: 300px;">
-                                    {{ Str::limit($vendor->address ?? '—', 60) }}
+                                    {{ Str::limit($supplier->address ?? '—', 60) }}
                                 </td>
                                 <td style="padding: 1rem 1.5rem; text-align: right; white-space: nowrap;">
-                                    <a href="{{ route('admin.vendor.edit', $vendor->slug) }}"
+                                    <a href="{{ route('admin.supplier.edit', $supplier->slug) }}"
                                        style="
                                            color: #3b82f6;
                                            text-decoration: none;
@@ -190,11 +188,11 @@
                                         Edit
                                     </a>
 
-                                    <form action="{{ route('admin.vendor.delete', $vendor->slug) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('admin.supplier.delete', $supplier->slug) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                onclick="return confirm('Are you sure you want to delete {{ addslashes($vendor->prefix . ' ' . $vendor->name) }}? This action cannot be undone.')"
+                                                onclick="return confirm('Are you sure you want to delete {{ addslashes($supplier->prefix . ' ' . $supplier->name) }}? This action cannot be undone.')"
                                                 style="
                                                     color: #ef4444;
                                                     background: none;
@@ -215,13 +213,13 @@
                                 <td colspan="4" style="padding: 5rem 1.5rem; text-align: center; color: #6b7280;">
                                     <div style="font-size: 5rem; margin-bottom: 1.25rem; opacity: 0.6;">🏪</div>
                                     <p style="font-size: 1.4rem; font-weight: 600; margin-bottom: 0.75rem;">
-                                        No vendors found
+                                        No suppliers found
                                     </p>
                                     <p style="font-size: 1rem;">
                                         @if($search)
                                             Try a different search term or
                                         @endif
-                                        Get started by adding your first vendor
+                                        Get started by adding your first supplier
                                     </p>
                                 </td>
                             </tr>
@@ -231,9 +229,9 @@
             </div>
 
             <!-- Pagination -->
-            @if($vendors->hasPages())
+            @if($suppliers->hasPages())
                 <div style="padding: 1.25rem 1.5rem; border-top: 1px solid #e5e7eb; text-align: center;">
-                    {{ $vendors->links() }}
+                    {{ $suppliers->links() }}
                 </div>
             @endif
         </div>

@@ -24,10 +24,10 @@
                         <a href="{{ route('admin.dashboard') }}">Home</a>
                     </li>
                     <li class="breadcrumb-item" style="color: black;">
-                        <a href="{{ route('admin.vendor.index') }}">Vendor Management</a>
+                        <a href="{{ route('admin.supplier.index') }}">Supplier Management</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page" style="color: #6366f1">
-                        Create New Vendor
+                        Create New Supplier
                     </li>
                 </ol>
             </nav>
@@ -38,10 +38,10 @@
                 color: #111827;
                 margin: 0 0 0.5rem 0;
             ">
-                Add New Vendor
+                Add New Supplier
             </h1>
             <p style="color: #6b7280; font-size: 1rem; margin: 0;">
-                Fill in the vendor details below
+                Fill in the supplier details below
             </p>
         </div>
 
@@ -54,7 +54,7 @@
             overflow: hidden;
             padding: 2rem;
         ">
-            <form action="{{ route('admin.vendor.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.supplier.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
@@ -70,7 +70,6 @@
                             <select name="prefix" id="prefix"
                                     style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; background: white; color: #111827;">
                                 <option value="Tk." {{ old('prefix') === 'Tk.' ? 'selected' : '' }}>Tk.</option>
-                                <option value="Hotel" {{ old('prefix') === 'Hotel' ? 'selected' : '' }}>Hotel</option>
                                 <option value="CV." {{ old('prefix') === 'CV.' ? 'selected' : '' }}>CV.</option>
                                 <option value="PT." {{ old('prefix') === 'PT.' ? 'selected' : '' }}>PT.</option>
                             </select>
@@ -82,7 +81,7 @@
                         <!-- Name -->
                         <div>
                             <label for="name" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
-                                Vendor Name <span style="color: #ef4444;">*</span>
+                                Supplier Name <span style="color: #ef4444;">*</span>
                             </label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" required
                                    placeholder="e.g. Elektronik Jaya"
@@ -123,10 +122,10 @@
                             @enderror
                         </div>
 
-                        <!-- Vendor Image -->
+                        <!-- Supplier Image -->
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
-                                Vendor Logo / Photo <small style="color: #6b7280;">(optional)</small>
+                                Supplier Logo / Photo <small style="color: #6b7280;">(optional)</small>
                             </label>
 
                             <div id="image-preview" style="
@@ -148,9 +147,9 @@
                                 </div>
                             </div>
 
-                            <input type="file" name="vendor_image" id="vendor_image" accept="image/*"
+                            <input type="file" name="supplier_image" id="supplier_image" accept="image/*"
                                    style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; color: #111827;">
-                            @error('vendor_image')
+                            @error('s')
                                 <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
                         </div>
@@ -160,7 +159,7 @@
 
                 <!-- Buttons -->
                 <div style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <a href="{{ route('admin.vendor.index') }}"
+                    <a href="{{ route('admin.supplier.index') }}"
                     style="
                         padding: 0.75rem 1.5rem;
                         background: #ef4444;
@@ -197,7 +196,7 @@
 
     <!-- Image preview script -->
     <script>
-        document.getElementById('vendor_image').addEventListener('change', function(e) {
+        document.getElementById('supplier_image').addEventListener('change', function(e) {
             const preview = document.getElementById('image-preview');
             preview.innerHTML = '';
 

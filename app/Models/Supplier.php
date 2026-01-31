@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 
-class Vendor extends Model
+class Supplier extends Model
 {
     use HasFactory, Sluggable;
 
@@ -16,8 +16,13 @@ class Vendor extends Model
         'slug',
         'phone_number',
         'address',
-        'vendor_image',
+        'supplier_image',
     ];
+
+    public function catalogSuppliers()
+    {
+        return $this->hasMany(CatalogSupplier::class, 'supplier_id');
+    }
 
     /**
      * Configure how the slug is generated
@@ -32,7 +37,13 @@ class Vendor extends Model
         ];
     }
 
-    // In Vendor model - improved scopeSearch (optional upgrade)
+    public function availableCatalogSuppliers()
+    {
+        return $this->hasMany(CatalogSupplier::class, 'supplier_id')
+                    ->where('is_available', true);
+    }
+
+    // Optional: quick search helper
     public function scopeSearch($query, string $search)
     {
         $search = trim($search);

@@ -76,6 +76,32 @@
                 @php
                     $currentRoute = Route::currentRouteName();
                 @endphp
+
+                <a href="{{ route('admin.catalog.index') }}"
+                   style="
+                       padding: 0.6rem 1.1rem;
+                       border-radius: 0.75rem;
+                       font-weight: 500;
+                       font-size: 0.95rem;
+                       text-decoration: none;
+                       transition: all 0.2s;
+                   "
+                   onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
+                   onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.catalog.index') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'users') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
+                >Catalog</a>
+
+                <a href="{{ route('admin.supplier.index') }}"
+                   style="
+                       padding: 0.6rem 1.1rem;
+                       border-radius: 0.75rem;
+                       font-weight: 500;
+                       font-size: 0.95rem;
+                       text-decoration: none;
+                       transition: all 0.2s;
+                   "
+                   onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
+                   onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.supplier.index') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'users') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
+                >Supplier</a>
                 
                 <a href="{{ route('admin.vendor.index') }}"
                    style="

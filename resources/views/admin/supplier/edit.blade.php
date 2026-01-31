@@ -24,10 +24,10 @@
                         <a href="{{ route('admin.dashboard') }}">Home</a>
                     </li>
                     <li class="breadcrumb-item" style="color: black;">
-                        <a href="{{ route('admin.vendor.index') }}">Vendor Management</a>
+                        <a href="{{ route('admin.supplier.index') }}">Supplier Management</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page" style="color: #6366f1">
-                        Create New Vendor
+                        Edit Supplier
                     </li>
                 </ol>
             </nav>
@@ -38,10 +38,10 @@
                 color: #111827;
                 margin: 0 0 0.5rem 0;
             ">
-                Add New Vendor
+                Edit Supplier
             </h1>
             <p style="color: #6b7280; font-size: 1rem; margin: 0;">
-                Fill in the vendor details below
+                Update the supplier information below
             </p>
         </div>
 
@@ -54,8 +54,9 @@
             overflow: hidden;
             padding: 2rem;
         ">
-            <form action="{{ route('admin.vendor.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.supplier.update', $supplier->slug) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
 
@@ -69,10 +70,10 @@
                             </label>
                             <select name="prefix" id="prefix"
                                     style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; background: white; color: #111827;">
-                                <option value="Tk." {{ old('prefix') === 'Tk.' ? 'selected' : '' }}>Tk.</option>
-                                <option value="Hotel" {{ old('prefix') === 'Hotel' ? 'selected' : '' }}>Hotel</option>
-                                <option value="CV." {{ old('prefix') === 'CV.' ? 'selected' : '' }}>CV.</option>
-                                <option value="PT." {{ old('prefix') === 'PT.' ? 'selected' : '' }}>PT.</option>
+                                <option value="Tk." {{ old('prefix', $supplier->prefix) === 'Tk.' ? 'selected' : '' }}>Tk.</option>
+                                <option value="Hotel" {{ old('prefix', $supplier->prefix) === 'Hotel' ? 'selected' : '' }}>Hotel</option>
+                                <option value="CV." {{ old('prefix', $supplier->prefix) === 'CV.' ? 'selected' : '' }}>CV.</option>
+                                <option value="PT." {{ old('prefix', $supplier->prefix) === 'PT.' ? 'selected' : '' }}>PT.</option>
                             </select>
                             @error('prefix')
                                 <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -82,9 +83,9 @@
                         <!-- Name -->
                         <div>
                             <label for="name" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
-                                Vendor Name <span style="color: #ef4444;">*</span>
+                                Supplier Name <span style="color: #ef4444;">*</span>
                             </label>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                            <input type="text" name="name" id="name" value="{{ old('name', $supplier->name) }}" required
                                    placeholder="e.g. Elektronik Jaya"
                                    style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827;">
                             @error('name')
@@ -97,7 +98,7 @@
                             <label for="phone_number" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
                                 Phone Number
                             </label>
-                            <input type="tel" name="phone_number" id="phone_number" value="{{ old('phone_number') }}"
+                            <input type="tel" name="phone_number" id="phone_number" value="{{ old('phone_number', $supplier->phone_number) }}"
                                    placeholder="0812-3456-7890"
                                    style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827;">
                             @error('phone_number')
@@ -117,16 +118,16 @@
                             </label>
                             <textarea name="address" id="address" rows="4"
                                       placeholder="Jl. Sudirman No. 45, Kel. Margahayu, Kec. Bekasi Timur, Kota Bekasi, Jawa Barat 17113"
-                                      style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; resize: vertical; color: #111827;">{{ old('address') }}</textarea>
+                                      style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; resize: vertical; color: #111827;">{{ old('address', $supplier->address) }}</textarea>
                             @error('address')
                                 <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Vendor Image -->
+                        <!-- Supplier Image -->
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">
-                                Vendor Logo / Photo <small style="color: #6b7280;">(optional)</small>
+                                Supplier Logo / Photo <small style="color: #6b7280;">(optional – upload new to replace)</small>
                             </label>
 
                             <div id="image-preview" style="
@@ -142,17 +143,28 @@
                                 overflow: hidden;
                                 position: relative;
                             ">
-                                <div style="text-align: center; color: #9ca3af;">
-                                    <div style="font-size: 2.5rem;">🖼️</div>
-                                    <p style="font-size: 0.875rem; margin: 0.5rem 0 0;">Preview</p>
-                                </div>
+                                @if($supplier->supplier_image)
+                                    <img src="{{ asset('storage/' . $supplier->supplier_image) }}"
+                                         alt="Current supplier logo"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    <div style="text-align: center; color: #9ca3af;">
+                                        <div style="font-size: 2.5rem;">🖼️</div>
+                                        <p style="font-size: 0.875rem; margin: 0.5rem 0 0;">No image</p>
+                                    </div>
+                                @endif
                             </div>
 
-                            <input type="file" name="vendor_image" id="vendor_image" accept="image/*"
+                            <input type="file" name="supplier_image" id="supplier_image" accept="image/*"
                                    style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; color: #111827;">
-                            @error('vendor_image')
+                            @error('supplier_image')
                                 <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
+                            @if($supplier->supplier_image)
+                                <small style="color: #6b7280; display: block; margin-top: 0.5rem;">
+                                    Current: {{ basename($supplier->supplier_image) }}
+                                </small>
+                            @endif
                         </div>
 
                     </div>
@@ -160,18 +172,18 @@
 
                 <!-- Buttons -->
                 <div style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <a href="{{ route('admin.vendor.index') }}"
-                    style="
-                        padding: 0.75rem 1.5rem;
-                        background: #ef4444;
-                        color: white;
-                        border-radius: 0.5rem;
-                        text-decoration: none;
-                        font-weight: 500;
-                        transition: background 0.2s;
-                    "
-                    onmouseover="this.style.background='#dc2626'"
-                    onmouseout="this.style.background='#ef4444'">
+                    <a href="{{ route('admin.supplier.index') }}"
+                       style="
+                           padding: 0.75rem 1.5rem;
+                           background: #ef4444;
+                           color: white;
+                           border-radius: 0.5rem;
+                           text-decoration: none;
+                           font-weight: 500;
+                           transition: background 0.2s;
+                       "
+                       onmouseover="this.style.background='#dc2626'"
+                       onmouseout="this.style.background='#ef4444'">
                         Cancel
                     </a>
 
@@ -179,7 +191,7 @@
                             style="
                                 background: #6366f1;
                                 color: white;
-                                padding: 0.75rem 1.5rem;
+                                padding: 0.75rem 2rem;
                                 border: none;
                                 border-radius: 0.5rem;
                                 font-weight: 500;
@@ -188,16 +200,16 @@
                             "
                             onmouseover="this.style.background='#4f46e5'"
                             onmouseout="this.style.background='#6366f1'">
-                        Create
+                        Save Changes
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Image preview script -->
+    <!-- Image preview script (shows current image, updates on new selection) -->
     <script>
-        document.getElementById('vendor_image').addEventListener('change', function(e) {
+        document.getElementById('supplier_image').addEventListener('change', function(e) {
             const preview = document.getElementById('image-preview');
             preview.innerHTML = '';
 
@@ -213,12 +225,17 @@
                 }
                 reader.readAsDataURL(this.files[0]);
             } else {
-                preview.innerHTML = `
-                    <div style="text-align: center; color: #9ca3af;">
-                        <div style="font-size: 2.5rem;">🖼️</div>
-                        <p style="font-size: 0.875rem; margin: 0.5rem 0 0;">Preview</p>
-                    </div>
-                `;
+                // Restore current image if no new file selected
+                @if($supplier->supplier_image)
+                    preview.innerHTML = `<img src="{{ asset('storage/' . $supplier->supplier_image) }}" alt="Current supplier logo" style="width: 100%; height: 100%; object-fit: cover;">`;
+                @else
+                    preview.innerHTML = `
+                        <div style="text-align: center; color: #9ca3af;">
+                            <div style="font-size: 2.5rem;">🖼️</div>
+                            <p style="font-size: 0.875rem; margin: 0.5rem 0 0;">No image</p>
+                        </div>
+                    `;
+                @endif
             }
         });
     </script>
