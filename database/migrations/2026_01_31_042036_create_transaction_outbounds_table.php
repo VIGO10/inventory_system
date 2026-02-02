@@ -15,6 +15,8 @@ return new class extends Migration
 
             $table->decimal('total_price', 15, 4)->default(0);
             $table->decimal('discount', 15, 4)->default(0);
+            $table->decimal('net_profit', 15, 4)->default(0); // ← NEW FIELD
+
             $table->date('deadline_payment_date')->nullable();
             $table->dateTime('created_date')->useCurrent();
             $table->boolean('is_published')->default(false);
@@ -23,6 +25,8 @@ return new class extends Migration
             $table->dateTime('completed_date')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->dateTime('paid_date')->nullable();
+
+            $table->string('transaction_image', 255)->nullable();  // transaction image
 
             $table->timestamps();
         });

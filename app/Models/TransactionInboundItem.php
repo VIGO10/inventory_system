@@ -13,6 +13,7 @@ class TransactionInboundItem extends Model
     protected $fillable = [
         'transaction_inbound_id',
         'catalog_supplier_id',
+        'catalog_id',
         'supplier_id',
         'price',
         'title_1_qty',
@@ -39,6 +40,11 @@ class TransactionInboundItem extends Model
     public function catalogSupplier(): BelongsTo
     {
         return $this->belongsTo(CatalogSupplier::class, 'catalog_supplier_id');
+    }
+    
+    public function catalog(): BelongsTo
+    {
+        return $this->belongsTo(Catalog::class);
     }
 
     public function supplier(): BelongsTo

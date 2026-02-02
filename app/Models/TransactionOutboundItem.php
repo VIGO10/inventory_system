@@ -13,7 +13,8 @@ class TransactionOutboundItem extends Model
     protected $fillable = [
         'transaction_outbound_id',
         'catalog_id',
-        'price',
+        'price',           // selling price (customer pays this)
+        'buy_price',       // ← NEW: cost price (what you paid / supplier price)
         'title_1_qty',
         'title_1_price',
         'title_2_qty',
@@ -22,12 +23,13 @@ class TransactionOutboundItem extends Model
     ];
 
     protected $casts = [
-        'title_1_qty'   => 'decimal:2',
-        'title_2_qty'   => 'decimal:2',
-        'price'         => 'decimal:4',
-        'title_1_price' => 'decimal:4',
-        'title_2_price' => 'decimal:4',
-        'discount'      => 'decimal:4',
+        'title_1_qty'    => 'decimal:2',
+        'title_2_qty'    => 'decimal:2',
+        'price'          => 'decimal:4',
+        'buy_price'      => 'decimal:4',     // ← added
+        'title_1_price'  => 'decimal:4',
+        'title_2_price'  => 'decimal:4',
+        'discount'       => 'decimal:4',
     ];
 
     public function transaction(): BelongsTo

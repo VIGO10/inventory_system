@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('completed_date')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->dateTime('paid_date')->nullable();
+            $table->string('transaction_image', 255)->nullable();  // transaction image
 
             $table->foreignId('supplier_id')->constrained()->onDelete('restrict');
             $table->timestamps();

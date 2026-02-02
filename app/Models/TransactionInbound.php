@@ -24,6 +24,7 @@ class TransactionInbound extends Model
         'completed_date',
         'is_paid',
         'paid_date',
+        'transaction_image',
     ];
 
     protected $casts = [

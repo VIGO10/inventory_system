@@ -155,4 +155,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'PreventBackHistory'
                 ->name('delete');
         });
     });
+
+    Route::prefix('transaction')->name('transaction.')->group(function(){
+        Route::controller(TransactionController::class)->group(function(){
+            // List all transactions
+            Route::get('/index', 'index')
+                ->name('index');
+        });
+    });
 });

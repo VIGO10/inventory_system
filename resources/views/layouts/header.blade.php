@@ -69,13 +69,26 @@
 
         <!-- Navigation + User Area -->
         @if (Auth::check() && Auth::user()->role === 'admin')
-        <div style="display: flex; align-items: center; gap: 2.5rem;">
+        <div style="display: flex; align-items: center; gap: 2rem;">
 
             <!-- Main Navigation Menu -->
             <nav style="display: flex; gap: 0.75rem;">
                 @php
                     $currentRoute = Route::currentRouteName();
                 @endphp
+
+                <a href="{{ route('admin.transaction.index') }}"
+                   style="
+                       padding: 0.6rem 1.1rem;
+                       border-radius: 0.75rem;
+                       font-weight: 500;
+                       font-size: 0.95rem;
+                       text-decoration: none;
+                       transition: all 0.2s;
+                   "
+                   onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
+                   onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.transaction.index') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'users') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
+                >Transaction</a>                
 
                 <a href="{{ route('admin.catalog.index') }}"
                    style="
@@ -145,15 +158,15 @@
             </nav>
 
             <!-- User Info + Logout -->
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div style="display: flex; align-items: center;;">
                 <div style="
                     display: flex;
                     align-items: center;
-                    gap: 0.75rem;
-                    padding: 0.5rem 1rem;
+                    gap: 0.5rem;
+                    padding: 0.5rem 0.5rem;
                     background: rgba(255,255,255,0.08);
                     border-radius: 0.75rem;
-                    border: 1px solid rgba(255,255,255,0.1);
+                    border: 1px solid rgba(255,255,255,0.1); margin-right: 1.5rem;
                 ">
                     <div style="text-align: right;">
                         <div style="font-weight: 600; font-size: 0.95rem;">{{ Auth::user()->fullname }}</div>

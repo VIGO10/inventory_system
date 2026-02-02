@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('transaction_inbound_id')->constrained()->onDelete('cascade');
             $table->foreignId('catalog_supplier_id')->constrained('catalog_suppliers')->onDelete('restrict');
+            $table->foreignId('catalog_id')->constrained('catalogs')->onDelete('restrict');
             $table->foreignId('supplier_id')->constrained()->onDelete('restrict');
 
             $table->decimal('price', 15, 4)->default(0);           // final price per item after discount
