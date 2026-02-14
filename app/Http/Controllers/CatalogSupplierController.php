@@ -89,7 +89,7 @@ class CatalogSupplierController extends Controller
 
         if ($validated['minimum_order_title'] === 'title_1') {
             $validated['minimum_order_title'] = $validated['title_1'];
-        } else {
+        } elseif ($validated['minimum_order_title'] === 'title_2') {
             $validated['minimum_order_title'] = $validated['title_2'];
         }
 
@@ -182,5 +182,27 @@ class CatalogSupplierController extends Controller
         return redirect()
             ->route('admin.supplier.catalog.index', $supplier->slug)
             ->with('success', 'Catalog Supplier ' . e($catalogSupplier->name) . ' has been deleted successfully.');
+    }
+
+    /**
+     * Get available products by supplier (for AJAX requests).
+     */
+    public function getBySupplier($supplierId)
+    {
+        $products = CatalogSupplier::where('supplier_id', $supplierId)
+            ->where('is_available', true)
+            ->get([
+                'id',
+                'name',
+                'title_1',
+                'title_2',
+                'value_per_title_2',
+                'minimum_order_title',
+                'minimum_order_qty',
+                'title_1_price',
+                'title_2_price'
+            ]);
+
+        return response()->json($products);
     }
 }

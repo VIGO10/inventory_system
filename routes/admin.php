@@ -6,6 +6,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CatalogSupplierController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\TransactionController;
 
 Route::middleware('guest')->group(function () {
     Route::redirect('/admin', '/admin/dashboard');
@@ -13,6 +14,7 @@ Route::middleware('guest')->group(function () {
     Route::redirect('/admin/vendor', '/admin/dashboard');
     Route::redirect('/admin/supplier', '/admin/dashboard');
     Route::redirect('/admin/catalog', '/admin/dashboard');
+    Route::redirect('/admin/transaction', '/admin/dashboard');
 });
 
 // All routes in this file are prefixed with /admin
@@ -120,6 +122,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'PreventBackHistory'
                 // Delete catalog supplier
                 Route::delete('/{supplier:slug}/catalog/{catalogSupplier}', '_deleteCatalogSupplier')
                     ->name('delete');
+
+                // Get catalogs by supplier (AJAX)
+                Route::get('/getBySupplier/{supplierId}', 'getBySupplier')
+                    ->name('getBySupplier');
             });
         });
     });
@@ -153,6 +159,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'PreventBackHistory'
             // Delete catalog
             Route::delete('catalog/{catalog}', '_deleteCatalog')
                 ->name('delete');
+
+            // Get catalogs (AJAX)
+            Route::get('/getAvailableCatalog', 'getAvailableCatalog')
+                ->name('getAvailableCatalog');
         });
     });
 
@@ -161,6 +171,82 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'PreventBackHistory'
             // List all transactions
             Route::get('/index', 'index')
                 ->name('index');
+            
+            Route::prefix('inbound')->name('inbound.')->group(function(){
+                // Show inbound transaction
+                Route::get('/{transaction:reference_number}/detail', 'detailInboundTransaction')
+                    ->name('detail');
+
+                // Show create form
+                Route::get('/create', 'createNewInboundTransaction')
+                    ->name('create');
+
+                // Create inbound transaction
+                Route::post('/store', '_createNewInboundTransaction')
+                    ->name('store');
+
+                // Show edit form
+                Route::get('/{transaction:reference_number}/edit', 'editInboundTransaction')
+                    ->name('edit');
+
+                // Update inbound transaction
+                Route::put('/{transaction:reference_number}', '_editInboundTransaction')
+                    ->name('update');
+
+                // Publish inbound transaction
+                Route::post('/{transaction:reference_number}/publish', '_publishInboundTransaction')
+                    ->name('publish');
+
+                // Complete inbound transaction
+                Route::post('/{transaction:reference_number}/complete', '_completeInboundTransaction')
+                    ->name('complete');
+
+                // Delete inbound transaction
+                Route::delete('/{transaction:reference_number}', '_deleteInboundTransaction')
+                    ->name('delete');
+
+                // Set inbound transaction paid
+                Route::post('/{transaction:reference_number}/set-paid', '_setInboundTransactionPaid')
+                    ->name('paid');
+            });
+
+            Route::prefix('outbound')->name('outbound.')->group(function(){
+                // Show outbound transaction
+                Route::get('/{transaction:reference_number}/detail', 'detailOutboundTransaction')
+                    ->name('detail');
+
+                // Show create form
+                Route::get('/create', 'createNewOutboundTransaction')
+                    ->name('create');
+
+                // Create Outbound transaction
+                Route::post('/store', '_createNewOutboundTransaction')
+                    ->name('store');
+
+                // Show edit form
+                Route::get('/{transaction:reference_number}/edit', 'editOutboundTransaction')
+                    ->name('edit');
+
+                // Update Outbound transaction
+                Route::put('/{transaction:reference_number}', '_editOutboundTransaction')
+                    ->name('update');
+
+                // Publish Outbound transaction
+                Route::post('/{transaction:reference_number}/publish', '_publishOutboundTransaction')
+                    ->name('publish');
+
+                // Complete Outbound transaction
+                Route::post('/{transaction:reference_number}/complete', '_completeOutboundTransaction')
+                    ->name('complete');
+
+                // Delete Outbound transaction
+                Route::delete('/{transaction:reference_number}', '_deleteOutboundTransaction')
+                    ->name('delete');
+
+                // Set Outbound transaction paid
+                Route::post('/{transaction:reference_number}/set-paid', '_setOutboundTransactionPaid')
+                    ->name('paid');
+            });
         });
     });
 });

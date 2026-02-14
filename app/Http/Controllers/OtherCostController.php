@@ -8,12 +8,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use App\Models\Catalog;
+use App\Models\OtherCost;
 
-class CatalogController extends Controller
+class OtherCostController extends Controller
 {
     /**
-     * Show the catalog management page.
+     * Show the other cost management page.
      */
     public function index(Request $request)
     {

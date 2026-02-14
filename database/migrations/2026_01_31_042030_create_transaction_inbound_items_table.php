@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained()->onDelete('restrict');
 
             $table->decimal('price', 15, 4)->default(0);           // final price per item after discount
-            $table->decimal('title_1_qty', 12, 2)->default(0);
+            $table->unsignedInteger('title_1_qty')->default(0);
             $table->decimal('title_1_price', 15, 4)->default(0);
-            $table->decimal('title_2_qty', 12, 2)->nullable();
+            $table->unsignedInteger('title_2_qty')->default(0);
             $table->decimal('title_2_price', 15, 4)->nullable();
 
             $table->decimal('discount', 15, 4)->default(0);        // discount for this line item

@@ -53,4 +53,32 @@ class TransactionOutbound extends Model
     {
         return $this->hasMany(TransactionOutboundItem::class);
     }
+
+        public function getDisplayStatusAttribute(): string
+    {
+        if ($this->is_paid) {
+            return 'Paid';
+        }
+
+        if ($this->is_completed) {
+            return 'Completed';
+        }
+
+        if ($this->is_published) {
+            return 'Ongoing';
+        }
+
+        return 'Pending';
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->display_status) {
+            'Paid'      => '#10b981',   // green
+            'Completed' => '#10b981',   // green (or '#059669')
+            'Ongoing' => '#3b82f6',   // blue
+            'Pending'   => '#f59e0b',   // amber/yellow
+            default     => '#6b7280',   // gray fallback
+        };
+    }
 }

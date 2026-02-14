@@ -223,7 +223,7 @@
                                 <strong>Price per Min. Order:</strong> 
                                 @php
                                     $minPrice = 0;
-                                    if ($item->minimum_order_title === 'title_2' && $item->title_2_price > 0) {
+                                    if ($item->minimum_order_title === $item->title_2 && $item->title_2_price > 0) {
                                         $minPrice = $item->minimum_order_qty * $item->title_2_price;
                                     } elseif ($item->title_1_price > 0) {
                                         $minPrice = $item->minimum_order_qty * $item->title_1_price;

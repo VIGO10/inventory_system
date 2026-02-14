@@ -23,8 +23,8 @@ class TransactionOutboundItem extends Model
     ];
 
     protected $casts = [
-        'title_1_qty'    => 'decimal:2',
-        'title_2_qty'    => 'decimal:2',
+        'title_1_qty'    => 'integer',
+        'title_2_qty'    => 'integer',
         'price'          => 'decimal:4',
         'buy_price'      => 'decimal:4',     // ← added
         'title_1_price'  => 'decimal:4',
