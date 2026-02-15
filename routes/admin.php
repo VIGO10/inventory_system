@@ -7,6 +7,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CatalogSupplierController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\OtherCostController;
 
 Route::middleware('guest')->group(function () {
     Route::redirect('/admin', '/admin/dashboard');
@@ -15,6 +16,7 @@ Route::middleware('guest')->group(function () {
     Route::redirect('/admin/supplier', '/admin/dashboard');
     Route::redirect('/admin/catalog', '/admin/dashboard');
     Route::redirect('/admin/transaction', '/admin/dashboard');
+    Route::redirect('/admin/other-cost', '/admin/dashboard');
 });
 
 // All routes in this file are prefixed with /admin
@@ -247,6 +249,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'PreventBackHistory'
                 Route::post('/{transaction:reference_number}/set-paid', '_setOutboundTransactionPaid')
                     ->name('paid');
             });
+        });
+    });
+
+    Route::prefix('other-cost')->name('other-cost.')->group(function(){
+        Route::controller(OtherCostController::class)->group(function(){
+            // Show report
+            Route::get('index', 'index')
+                ->name('index');
+
+            // Show create form
+            Route::get('create', 'createNewOtherCost')
+                ->name('create');
+
+            // Create other cost
+            Route::post('store', '_createNewOtherCost')
+                ->name('store');
+
+            // Delete other cost
+            Route::delete('other-cost/{other_cost}', '_deleteOtherCost')
+                ->name('delete');
         });
     });
 });

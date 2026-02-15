@@ -11,13 +11,6 @@ class OtherCost extends Model
     use HasFactory;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'other_costs';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array<string>
@@ -38,16 +31,6 @@ class OtherCost extends Model
         'price' => 'decimal:4',
         'date'  => 'date:Y-m-d',
         'type'  => 'string',
-    ];
-
-    /**
-     * Default attribute values.
-     *
-     * @var array
-     */
-    protected $attributes = [
-        'type'  => 'out',
-        'price' => 0,
     ];
 
     // -------------------------------------------------------------------------

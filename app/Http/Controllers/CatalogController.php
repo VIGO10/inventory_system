@@ -61,7 +61,6 @@ class CatalogController extends Controller
      */
     public function _createNewCatalog(Request $request)
     {
-        dd($request);
         // 1. Validate the incoming request
         $validated = $request->validate([
             'name'                => 'required|string|max:150',

@@ -28,44 +28,63 @@
 
         <!-- Logo + Brand -->
         <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="
-                width: 56px;
-                height: 56px;
-                background: linear-gradient(135deg, #6366f1, #a855f7);
-                border-radius: 1rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 10px 25px -5px rgba(99,102,241,0.5);
-                border: 1px solid rgba(255,255,255,0.15);
-            ">
-                <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-            </div>
+            <a href="{{ route('admin.dashboard') }}" 
+            style="text-decoration: none; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s ease;">
+                
+                <!-- Logo / Icon -->
+                <div style="
+                    width: 56px;
+                    height: 56px;
+                    background: linear-gradient(135deg, #6366f1, #a855f7);
+                    border-radius: 1rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 10px 25px -5px rgba(99,102,241,0.5);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    transition: all 0.2s ease;
+                ">
+                    <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                    </svg>
+                </div>
 
-            <div>
-                <h1 style="
-                    font-size: 1.75rem;
-                    font-weight: 800;
-                    letter-spacing: -0.025em;
-                    margin: 0;
-                    background: linear-gradient(to right, #e0e7ff, #c7d2fe);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                ">
-                    Inventory
-                </h1>
-                <p style="
-                    font-size: 0.875rem;
-                    color: rgba(199,210,254,0.75);
-                    margin-top: -0.25rem;
-                    font-weight: 400;
-                ">
-                    Management System
-                </p>
-            </div>
+                <!-- Text -->
+                <div style="transition: all 0.2s ease;">
+                    <h1 style="
+                        font-size: 1.75rem;
+                        font-weight: 800;
+                        letter-spacing: -0.025em;
+                        margin: 0;
+                        background: linear-gradient(to right, #e0e7ff, #c7d2fe);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    ">
+                        Inventory
+                    </h1>
+                    <p style="
+                        font-size: 0.875rem;
+                        color: rgba(199,210,254,0.75);
+                        margin-top: -0.25rem;
+                        font-weight: 400;
+                    ">
+                        Management System
+                    </p>
+                </div>
+            </a>
         </div>
+
+        <style>
+            a:hover .logo-container {
+                transform: scale(1.08);
+                box-shadow: 0 15px 35px -8px rgba(99,102,241,0.6);
+            }
+            a:hover h1 {
+                background: linear-gradient(to right, #f3f4f6, #e0e7ff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+        </style>
 
         <!-- Navigation + User Area -->
         @if (Auth::check() && Auth::user()->role === 'admin')
@@ -76,6 +95,19 @@
                 @php
                     $currentRoute = Route::currentRouteName();
                 @endphp
+
+                <a href="{{ route('admin.other-cost.index') }}"
+                   style="
+                       padding: 0.6rem 0.6rem;
+                       border-radius: 0.75rem;
+                       font-weight: 300;
+                       font-size: 0.95rem;
+                       text-decoration: none;
+                       transition: all 0.2s;
+                   "
+                   onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
+                   onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.other-cost.index') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'users') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
+                >Other Cost</a>                
 
                 <a href="{{ route('admin.transaction.index') }}"
                    style="
@@ -141,20 +173,6 @@
                    onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
                    onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.user.index') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'users') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
                 >User</a>
-
-                <a href="{{ route('admin.dashboard') }}"
-                   style="
-                       padding: 0.6rem 1.1rem;
-                       border-radius: 0.75rem;
-                       font-weight: 500;
-                       font-size: 0.95rem;
-                       text-decoration: none;
-                       transition: all 0.2s;
-                   "
-                   onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'"
-                   onmouseout="this.style.background='{{ str_starts_with($currentRoute, 'admin.dashboard') ? 'rgba(255,255,255,0.12)' : 'transparent' }}'; this.style.color='{{ str_starts_with($currentRoute, 'dashboard') ? 'white' : 'rgba(255,255,255,0.75)' }}'"
-                >Dashboard</a>
-
             </nav>
 
             <!-- User Info + Logout -->

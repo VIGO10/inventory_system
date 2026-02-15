@@ -17,190 +17,81 @@ class OtherCostController extends Controller
      */
     public function index(Request $request)
     {
-        $tab = $request->query('tab', 'available');
+        $tab    = $request->query('tab', 'in');
         $search = $request->query('search');
+        $month  = $request->query('month');   // now expected as '01', '02', ..., '12' or empty
+        $year   = $request->query('year');    // e.g. '2024', '2025' or empty
 
-        $query = Catalog::latest();
+        $query = OtherCost::query()->latest();
 
-        // Apply tab filter
-        if ($tab === 'not-available') {
-            $query->where('is_available', false);
-        } else {
-            $query->where('is_available', true);
-        }
+        // Tab filter: 'in' → income, 'out' → expense/cost
+        $query->where('type', $tab === 'out' ? 'out' : 'in');
 
-        // Apply search filter
+        // Search by name
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-            });
+            $query->where('name', 'like', "%{$search}%");
         }
 
-        $catalogs = $query->paginate(12)->appends($request->query());
+        // Month filter (handle '01' → 1, etc.)
+        if ($month && in_array($month, array_map(fn($m) => sprintf('%02d', $m), range(1,12)))) {
+            $query->whereMonth('created_at', (int) ltrim($month, '0'));
+        }
 
-        // Counts for tabs (you can optimize this later with cached counts if needed)
+        // Year filter
+        $currentYear = now()->year;
+        if ($year && is_numeric($year) && $year >= ($currentYear - 10) && $year <= ($currentYear + 5)) {
+            $query->whereYear('created_at', $year);
+        }
+
+        // Pagination (keeps all query parameters)
+        $costs = $query->paginate(20)->appends($request->query());
+
+        // Counts for tabs (total per type - no is_active since type is the discriminator)
         $counts = [
-            'available'     => Catalog::where('is_available', true)->count(),
-            'not_available' => Catalog::where('is_available', false)->count(),
+            'in'  => OtherCost::where('type', 'in')->count(),
+            'out' => OtherCost::where('type', 'out')->count(),
         ];
 
-        return view('admin.catalog.index', compact('catalogs', 'counts', 'search'));
+        return view('admin.other_cost.index', compact('costs', 'counts', 'search', 'tab', 'month', 'year'));
     }
 
     /**
-     * Show the create catalog page.
+     * Store a newly created other cost for the given supplier.
      */
-    public function createNewCatalog()
-    {
-        return view('admin.catalog.create');
-    }
-
-    /**
-     * Store a newly created catalog (product) for the given supplier.
-     */
-    public function _createNewCatalog(Request $request)
-    {
-        dd($request);
-        // 1. Validate the incoming request
-        $validated = $request->validate([
-            'name'                => 'required|string|max:150',
-            'description'         => 'nullable|string',
-            'title_1'             => 'required|string|max:100',
-            'title_1_price'       => 'required|numeric|min:0',
-            'title_1_qty'         => 'required|integer|min:0',
-            'title_2'             => 'required|string|max:100',
-            'title_2_price'       => 'required|numeric|min:0',
-            'title_2_qty'         => 'required|integer|min:0',
-            'value_per_title_2'   => 'required|integer|min:1',
-            'minimum_order_title' => 'required|in:title_1,title_2',
-            'minimum_order_qty'   => 'required|integer|min:1',
-            'is_available'        => 'boolean',
-            'product_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', // 2MB max
-        ]);
-
-        // 2. Handle product image upload
-        if ($request->hasFile('product_image') && $request->file('product_image')->isValid()) {
-            $path = $request->file('product_image')->store('products', 'public');
-            $validated['product_image'] = $path;
-        }
-
-        // 3. Set default values if needed
-        $validated['is_available'] = $request->boolean('is_available', true);
-
-        if ($validated['minimum_order_title'] === 'title_1') {
-            $validated['minimum_order_title'] = $validated['title_1'];
-        } elseif ($validated['minimum_order_title'] === 'title_2') {
-            $validated['minimum_order_title'] = $validated['title_2'];
-        }
-
-        // 4. Create the new Catalog record
-        $catalogItem = Catalog::create($validated);
-
-        // 5. Optional: success message + redirect
-        return redirect()
-            ->route('admin.catalog.index')
-            ->with('success', "Product \"{$catalogItem->name}\" has been successfully added.");
-    }
-
-    /**
-     * Show the edit catalog page.
-     */
-    public function editCatalog(Catalog $catalog)
-    {
-        return view('admin.catalog.edit', compact('catalog'));
-    }
-
-    public function _editCatalog(Request $request, Catalog $catalog)
+    public function _createNewOtherCost(Request $request)
     {
         $validated = $request->validate([
-            'name'                => 'required|string|max:150',
-            'description'         => 'nullable|string',
-            'title_1'             => 'required|string|max:100',
-            'title_1_price'       => 'required|numeric|min:0',
-            'title_1_qty'         => 'required|integer|min:0',
-            'title_2'             => 'required|string|max:100',
-            'title_2_price'       => 'required|numeric|min:0',
-            'title_2_qty'         => 'required|integer|min:0',
-            'value_per_title_2'   => 'required|integer|min:1',
-            'minimum_order_title' => 'required|in:title_1,title_2',
-            'minimum_order_qty'   => 'required|integer|min:1',
-            'is_available'        => 'boolean',
-            'product_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'name'  => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'type'  => 'required|in:in,out',
+            'date'  => 'required|date',
         ]);
 
-        if ($request->hasFile('product_image')) {
-            // Delete old image
-            if ($catalog->product_image) {
-                Storage::disk('public')->delete($catalog->product_image);
-            }
-            $validated['product_image'] = $request->file('product_image')->store('products', 'public');
-        }
-
-        $catalog->update($validated);
+        $other_cost = OtherCost::create($validated);
 
         return redirect()
-            ->route('admin.catalog.index')
-            ->with('success', "Product \"{$catalog->name}\" updated successfully.");
+            ->route('admin.other-cost.index')
+            ->with('success', "Cost \"{$other_cost->name}\" has been successfully added.");
     }
 
     /**
-     * Activate or Deactivate a catalog (product).
+     * Delete other cost.
      */
-    public function _toggleCatalogStatus(Catalog $catalog)
+    public function _deleteOtherCost(OtherCost $other_cost)
     {
-        // Toggle the is_available status
-        if ($catalog->is_available) {
-            $catalog->is_available = false;
-            $message = 'Successfully deactivated ' . $catalog->name;
-        } else {
-            $catalog->is_available = true;
-            $message = 'Successfully activated ' . $catalog->name;
+        // Check the date if the date >= now(), show warning message
+        if (now()->greaterThan($other_cost->date)) {
+            return redirect()
+            ->route('admin.other-cost.index')
+            ->with('fail', "Other cost \"{$other_cost->name}\" cannot be deleted because date already passed.");
         }
         
-        $catalog->save();
+        // Delete other cost
+        $other_cost->delete();
 
+        // Redirect with success message
         return redirect()
-            ->route('admin.catalog.index')
-            ->with('success', $message);
-    }
-
-    /**
-     * Delete a catalog (and its associated image if exists).
-     */
-    public function _deleteCatalog(Catalog $catalog)
-    {
-        // 1. Check if there's an image and delete it from storage
-        if ($catalog->product_image) {
-            if (Storage::disk('public')->exists($catalog->product_image)) {
-                Storage::disk('public')->delete($catalog->product_image);
-            }
-        }
-
-        // 2. Delete the catalog record from database
-        $catalog->delete();
-
-        // 3. Redirect with success message
-        return redirect()
-            ->route('admin.catalog.index')
-            ->with('success', 'Catalog ' . e($catalog->name) . ' has been deleted successfully.');
-    }
-
-    public function getAvailableCatalog()
-    {
-        $products = Catalog::where('is_available', true)
-            ->get([
-                'id',
-                'name',
-                'title_1',
-                'title_2',
-                'value_per_title_2',
-                'minimum_order_title',
-                'minimum_order_qty',
-                'title_1_price',
-                'title_2_price'
-            ]);
-
-        return response()->json($products);
+            ->route('admin.other-cost.index')
+            ->with('success', "Cost \"{$other_cost->name}\" has been successfully deleted.");
     }
 }
