@@ -63,7 +63,9 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard');
             }   
 
-            return redirect()->route('client.dashboard');
+            return redirect()
+                    ->route('auth.login')
+                    ->with('fail', 'Session expired. Please login again.');
         }
     }
 

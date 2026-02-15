@@ -5,7 +5,7 @@
         <header style="background: white; border-bottom: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px); background: rgba(255,255,255,0.95);">
             <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
                 <h1 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0;">Dashboard</h1>
-                <div style="font-size: 0.875rem; color: #4b5563; font-weight: 500;">
+                <div style="font-size: 0.875rem; color: #4b5563; font-weight: 500; margin-left: 0.5rem;">
                     {{ now()->setTimezone('Asia/Makassar')->format('d F Y • H:i') }} WITA
                 </div>
             </div>
@@ -16,38 +16,79 @@
 
             <!-- Filter -->
             <div style="margin-bottom: 2rem;">
-                <form action="{{ route('admin.dashboard') }}" method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                    <select name="month" style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827; min-width: 140px; background: white; outline: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                        <option value="">All months</option>
+                <form action="{{ route('admin.dashboard') }}" 
+                    method="GET" 
+                    style="
+                        display:flex;
+                        gap:0.5rem;
+                        flex-wrap:nowrap;
+                        align-items:center;
+                        overflow-x:auto;
+                        padding-bottom:4px;
+                    ">
+
+                    <select name="month" style="
+                        padding:0.45rem 0.6rem;
+                        border:1px solid #d1d5db;
+                        border-radius:0.4rem;
+                        font-size:0.85rem;
+                        color:#111827;
+                        min-width:110px;
+                        background:white;
+                        outline:none;
+                    ">
+                        <option value="">Month</option>
                         @for ($m = 1; $m <= 12; $m++)
-                            <option value="{{ sprintf('%02d', $m) }}" {{ (request('month') ?: now()->month) == sprintf('%02d', $m) ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                            <option value="{{ sprintf('%02d', $m) }}" 
+                                {{ (request('month') ?: now()->month) == sprintf('%02d', $m) ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::create()->month($m)->format('M') }}
                             </option>
                         @endfor
                     </select>
 
-                    <select name="year" style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827; min-width: 120px; background: white; outline: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                        <option value="">All years</option>
+                    <select name="year" style="
+                        padding:0.45rem 0.6rem;
+                        border:1px solid #d1d5db;
+                        border-radius:0.4rem;
+                        font-size:0.85rem;
+                        color:#111827;
+                        min-width:85px;
+                        background:white;
+                        outline:none;
+                    ">
+                        <option value="">Year</option>
                         @for ($y = now()->year - 5; $y <= now()->year; $y++)
-                            <option value="{{ $y }}" {{ (request('year') ?: now()->year) == $y ? 'selected' : '' }}>
+                            <option value="{{ $y }}" 
+                                {{ (request('year') ?: now()->year) == $y ? 'selected' : '' }}>
                                 {{ $y }}
                             </option>
                         @endfor
                     </select>
 
                     <button type="submit"
-                            style="background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: background 0.2s; box-shadow: 0 1px 3px rgba(99,102,241,0.2);"
-                            onmouseover="this.style.background='#4f46e5'"
-                            onmouseout="this.style.background='#6366f1'">
+                        style="
+                            background:#6366f1;
+                            color:white;
+                            padding:0.45rem 0.9rem;
+                            border:none;
+                            border-radius:0.4rem;
+                            font-size:0.85rem;
+                            cursor:pointer;
+                            white-space:nowrap;
+                        ">
                         Filter
                     </button>
 
                     @if(request('month') || request('year'))
                         <a href="{{ route('admin.dashboard') }}"
-                           style="color: #ef4444; font-weight: 500; text-decoration: none; white-space: nowrap; padding: 0.5rem 0; align-self: center; transition: color 0.2s;"
-                           onmouseover="this.style.color='#dc2626'"
-                           onmouseout="this.style.color='#ef4444'">
-                            Clear
+                        style="
+                                color:#ef4444;
+                                font-size:0.85rem;
+                                font-weight:500;
+                                text-decoration:none;
+                                white-space:nowrap;
+                        ">
+                            Reset
                         </a>
                     @endif
                 </form>
